@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的环保教学资源库</title>
+    <style>
+        /* 可以在这里加入之前的绿色主题 CSS */
+        body { font-family: sans-serif; background: #f0f7f4; text-align: center; }
+        .menu { margin: 20px; }
+        .btn { padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🌿 个人信息储存与教学中心</h1>
+    <div class="menu">
+        <button class="btn" onclick="startGame()">开始单词挑战</button>
+        <a href="data.json" target="_blank"><button class="btn">查看原始数据</button></a>
+    </div>
+
+    <div id="game-container" style="display:none;">
+        <!-- 这里放入之前我给你的游戏 HTML 结构 -->
+    </div>
+
+    <script>
+        let gameData = [];
+        // 自动从同目录下的 data.json 读取信息
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                gameData = data;
+                console.log("数据加载成功:", gameData);
+            });
+
+        function startGame() {
+            document.getElementById('game-container').style.display = 'block';
+            // 调用初始化游戏的逻辑
+        }
+    </script>
+</body>
+</html>
