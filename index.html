@@ -71,16 +71,123 @@
             ]
         },
         // 新专题：词性转换
-        trans: {
-            mode: "step", // 三阶段点击模式
-            data: [
-                {icon:"🏡", zh:"邻居 / 街坊", opts:["neighbour", "neighbourhood"], sent:"My _______ is very kind. We live in a quiet _______.", ans:"neighbour"},
-                {icon:"🏗️", zh:"建造 / 建筑物", opts:["build", "building"], sent:"They want to _______ a tall _______ near the park.", ans:"build"},
-                {icon:"♻️", zh:"重用 / 可用的", opts:["reuse", "reusable"], sent:"You can _______ this bottle. It is a _______ one.", ans:"reuse"}
-                // ... 刚才给你的16个
-            ]
+       trans: {
+    mode: "step", // 三阶段点击模式
+    data: [
+        {
+            icon: "🏘️", 
+            zh: "邻居 (n.) / 社区 (n.)", 
+            opts: ["neighbour", "neighbourhood"], 
+            sent: "My _______ is very helpful, and there is a park in our _______.", 
+            ans: "neighbour"
+        },
+        {
+            icon: "🏗️", 
+            zh: "建造 (v.) / 建筑物 (n.)", 
+            opts: ["build", "building"], 
+            sent: "They plan to _______ a library. The _______ will be very tall.", 
+            ans: "build"
+        },
+        {
+            icon: "♻️", 
+            zh: "使用 (v./n.) / 可重复使用的 (adj.)", 
+            opts: ["use", "reusable"], 
+            sent: "We should _______ _______ bags instead of plastic ones.", 
+            ans: "use"
+        },
+        {
+            icon: "💾", 
+            zh: "节省/拯救 (v.) / 节省者 (n.)", 
+            opts: ["save", "saver"], 
+            sent: "Turn off the lights to _______ energy. Be an energy _______!", 
+            ans: "save"
+        },
+        {
+            icon: "🛡️", 
+            zh: "安全 (n.) / 安全的 (adj.) / 安全地 (adv.)", 
+            opts: ["safety", "safe", "safely"], 
+            sent: "For your _______, please stay _______ and drive _______.", 
+            ans: "safety"
+        },
+        {
+            icon: "👏", 
+            zh: "鼓励 (v.) / 鼓励 (n.) / 令人鼓舞的 (adj.)", 
+            opts: ["encourage", "encouragement", "encouraging"], 
+            sent: "Our teachers _______ us. Their _______ is very _______.", 
+            ans: "encourage"
+        },
+        {
+            icon: "🌱", 
+            zh: "环境 (n.) / 环境的 (adj.)", 
+            opts: ["environment", "environmental", "environmentally"], 
+            sent: "We must protect the _______. It is an _______ problem.", 
+            ans: "environment"
+        },
+        {
+            icon: "📅", 
+            zh: "天 (n.) / 每日的 (adj./adv.)", 
+            opts: ["day", "daily"], 
+            sent: "Read English every _______. It is a good _______ habit.", 
+            ans: "day"
+        },
+        {
+            icon: "🚌", 
+            zh: "运输 (v./n.) / 交通工具 (n.)", 
+            opts: ["transport", "transportation"], 
+            sent: "The bus is a form of public _______. It helps _______ people.", 
+            ans: "transportation"
+        },
+        {
+            icon: "📉", 
+            zh: "减少 (v.) / 减少 (n.)", 
+            opts: ["reduce", "reduction"], 
+            sent: "We need to _______ waste. There is a _______ in plastic use.", 
+            ans: "reduce"
+        },
+        {
+            icon: "🥣", 
+            zh: "混合 (v.) / 混合物 (n.)", 
+            opts: ["mix", "mixture"], 
+            sent: "If you _______ blue and yellow, you get a green _______.", 
+            ans: "mix"
+        },
+        {
+            icon: "⚡", 
+            zh: "电力 (n.) / 电工 (n.) / 电的 (adj.)", 
+            opts: ["electricity", "electrician", "electric"], 
+            sent: "Don't waste _______. The _______ is fixing the _______ fan.", 
+            ans: "electricity"
+        },
+        {
+            icon: "🚲", 
+            zh: "回收 (v.) / 循环 (n.) / 可回收的 (adj.)", 
+            opts: ["recycle", "cycle", "recyclable"], 
+            sent: "We can _______ paper because it is _______.", 
+            ans: "recycle"
+        },
+        {
+            icon: "🏛️", 
+            zh: "统治 (v.) / 政府 (n.) / 统治者 (n.)", 
+            opts: ["govern", "government", "governor"], 
+            sent: "The _______ makes laws to _______ the country.", 
+            ans: "government"
+        },
+        {
+            icon: "🔋", 
+            zh: "能量 (n.) / 精力充沛的 (adj.)", 
+            opts: ["energy", "energetic"], 
+            sent: "Solar _______ is clean. These _______ kids never get tired.", 
+            ans: "energy"
+        },
+        {
+            icon: "🦷", 
+            zh: "牙齿 (单数 n.) / 牙齿 (复数 n.)", 
+            opts: ["tooth", "teeth"], 
+            sent: "I have a sore _______. I need to brush all my _______.", 
+            ans: "tooth"
         }
-    };
+    ]
+}
 
     let currentMode = "";
     let currentIdx = 0;
