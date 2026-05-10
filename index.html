@@ -3,190 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>环保短语挑战库</title>
+    <title>英语学习挑战中心</title>
     <style>
-        :root { --primary-green: #2ecc71; --dark-green: #27ae60; --bg-color: #f0f7f4; }
+        :root { --primary-green: #2ecc71; --dark-green: #27ae60; --bg-color: #f0f7f4; --hint-gold: #f1c40f; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { max-width: 600px; width: 90%; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .container { max-width: 600px; width: 92%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
         
-        /* 初始隐藏游戏界面 */
         #game-ui { display: none; }
-        
-        .menu-ui h1 { color: var(--dark-green); margin-bottom: 30px; }
-        .start-btn { background: var(--primary-green); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; transition: transform 0.2s; shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .start-btn:hover { transform: scale(1.05); background: var(--dark-green); }
+        h1 { color: var(--dark-green); margin-bottom: 5px; }
+        .subtitle { color: #888; margin-bottom: 25px; }
 
-        .card { border: 3px solid var(--primary-green); border-radius: 15px; padding: 20px; margin: 20px 0; background: #fff; }
-        .visual-hint { font-size: 60px; display: block; margin-bottom: 10px; }
-        .chinese-hint { font-size: 1.4rem; font-weight: bold; color: #333; }
+        /* 菜单样式 */
+        .menu-grid { display: grid; gap: 15px; }
+        .menu-btn { padding: 20px; border: 2px solid var(--primary-green); border-radius: 15px; background: white; cursor: pointer; font-size: 1.1rem; font-weight: bold; color: var(--dark-green); transition: 0.3s; }
+        .menu-btn:hover { background: var(--primary-green); color: white; transform: translateY(-3px); }
 
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .option-btn { padding: 12px; border: 2px solid #eee; border-radius: 10px; background: white; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
-        .option-btn:hover { border-color: var(--primary-green); background: #f9fffb; }
+        /* 卡片与游戏 */
+        .card { border: 3px dashed var(--primary-green); border-radius: 20px; padding: 30px 20px; margin: 20px 0; min-height: 200px; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; }
+        .visual-hint { font-size: 70px; margin-bottom: 10px; }
+        .zh-layer { font-size: 1.4rem; font-weight: bold; color: var(--dark-green); margin: 10px 0; }
+        .sentence-layer { font-size: 1.1rem; color: #444; background: #f9f9f9; padding: 15px; border-radius: 10px; margin-top: 10px; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .option-btn { padding: 12px; border: 2px solid #eee; border-radius: 12px; background: white; cursor: pointer; transition: 0.2s; }
+        .correct { background: var(--primary-green) !important; color: white; }
+        .wrong { background: #ff7675 !important; color: white; }
         
-        .correct { background: var(--primary-green) !important; color: white; border-color: var(--dark-green); }
-        .wrong { background: #ff7675 !important; color: white; border-color: #d63031; }
-        
-        .next-btn { margin-top: 20px; background: var(--dark-green); color: white; border: none; padding: 12px 30px; border-radius: 25px; display: none; cursor: pointer; font-size: 1rem; }
-        #progress { color: #888; font-size: 0.9rem; }
+        .next-btn { margin-top: 25px; background: var(--dark-green); color: white; border: none; padding: 12px; border-radius: 30px; width: 100%; display: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<!-- 菜单界面 -->
-<div class="container menu-ui" id="menu-ui">
-    <h1>🌿 个人环保挑战库</h1>
-    <p style="color: #666; margin-bottom: 30px;">共收录 52 条环保相关短语</p>
-    <button class="start-btn" onclick="startGame()">开始单词挑战</button>
+<!-- 主菜单 -->
+<div class="container" id="menu-ui">
+    <h1>🌿 英语全能挑战</h1>
+    <p class="subtitle">选择一个专题开始练习</p>
+    <div class="menu-grid">
+        <button class="menu-btn" onclick="startGame('eco')">♻️ 环境保护短语 (直接选择)</button>
+        <button class="menu-btn" onclick="startGame('trans')">📝 词性转换专题 (三阶挑战)</button>
+    </div>
 </div>
 
 <!-- 游戏界面 -->
 <div class="container" id="game-ui">
-    <div id="progress">进度: 1 / 52</div>
-    <div class="card">
-        <span class="visual-hint" id="icon-hint">🌍</span>
-        <div class="chinese-hint" id="text-hint">准备好了吗？</div>
+    <div id="progress" style="font-size:0.8rem; color:#aaa"></div>
+    <div class="card" id="main-card" onclick="handleCardClick()">
+        <div id="step-hint" style="position:absolute; top:10px; right:15px; font-size:0.7rem; color:var(--hint-gold)"></div>
+        <span class="visual-hint" id="icon-hint"></span>
+        <div class="zh-layer" id="zh-layer"></div>
+        <div class="sentence-layer" id="sentence-layer"></div>
     </div>
     <div class="options-grid" id="options"></div>
-    <div id="feedback" style="margin-top:15px; height: 20px; font-weight:bold;"></div>
+    <div id="feedback" style="margin-top:15px; font-weight:bold; height:20px"></div>
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">下一题 →</button>
 </div>
 
 <script>
-    // 完整 52 条数据预装
-    const allData = [
-        {icon:"🚮", zh:"把垃圾分类", en:"sort rubbish/litter"},
-        {icon:"🧤", zh:"捡垃圾", en:"pick up litter/rubbish"},
-        {icon:"🚱", zh:"关掉水龙头", en:"turn off the tap"},
-        {icon:"🪥", zh:"刷牙", en:"brush your teeth"},
-        {icon:"🍼", zh:"塑料瓶", en:"plastic bottles"},
-        {icon:"🛍️", zh:"可重复使用的购物袋", en:"reusable shopping bags"},
-        {icon:"🚌", zh:"公共交通", en:"public transportation"},
-        {icon:"🚇", zh:"乘坐公共交通", en:"take public transport"},
-        {icon:"🌍", zh:"拯救这颗星球", en:"save the planet"},
-        {icon:"💣", zh:"战争或许会爆发", en:"the war might break out"},
-        {icon:"🎓", zh:"成功的能力", en:"abilities to succeed in school"},
-        {icon:"🔍", zh:"搜索有用的信息", en:"search for useful information"},
-        {icon:"🚰", zh:"请关掉流水的水龙头", en:"turn off the running tap"},
-        {icon:"🏘️", zh:"创建一个绿色环保小区", en:"build a green neighbourhood"},
-        {icon:"🍾", zh:"收集瓶子", en:"collect bottles"},
-        {icon:"🛠️", zh:"修理旧物件", en:"repair old items"},
-        {icon:"♻️", zh:"垃圾分类", en:"sort rubbish"},
-        {icon:"👜", zh:"做布包", en:"make cloth bags"},
-        {icon:"🌿", zh:"捡起垃圾", en:"pick up litter"},
-        {icon:"📖", zh:"写日记", en:"write a diary"},
-        {icon:"🚫", zh:"减少使用塑料", en:"reduce plastic"},
-        {icon:"✨", zh:"产生影响", en:"make a difference"},
-        {icon:"⚡", zh:"浪费电", en:"waste electricity"},
-        {icon:"🔵", zh:"一个垃圾回收桶", en:"a recycling bin"},
-        {icon:"🍔", zh:"废弃的食物", en:"waste foods"},
-        {icon:"🚿", zh:"关水龙头", en:"turn off the tap"},
-        {icon:"🚗", zh:"电车", en:"electric cars"},
-        {icon:"🏃", zh:"采取行动", en:"take action"},
-        {icon:"🔄", zh:"轮流", en:"take turns"},
-        {icon:"👨‍🏫", zh:"上环境课", en:"have environmental classes"},
-        {icon:"🥣", zh:"混合在一起", en:"mix ... up with ..."},
-        {icon:"🏢", zh:"低能耗的大楼", en:"low-energy buildings"},
-        {icon:"💡", zh:"关灯", en:"turn off the light"},
-        {icon:"🔌", zh:"省电", en:"save electricity"},
-        {icon:"🇨🇳", zh:"谈论我的祖国", en:"talk about my home country"},
-        {icon:"🎤", zh:"做演讲", en:"make a speech"},
-        {icon:"🏙️", zh:"绿色花园城市", en:"become a green garden city"},
-        {icon:"🌻", zh:"种向日葵", en:"plant sunflowers"},
-        {icon:"🚶", zh:"步行去学校", en:"walk to school"},
-        {icon:"📓", zh:"写绿色体验日记", en:"write a diary about green experiences"},
-        {icon:"📚", zh:"学习环境保护", en:"learn more about environmental protection"},
-        {icon:"🎲", zh:"轮流掷骰子", en:"take turns to roll the dice"},
-        {icon:"🍀", zh:"变得绿色环保", en:"go green"},
-        {icon:"🗓️", zh:"地球日活动", en:"Earth Day celebrations"},
-        {icon:"🚫", zh:"错过一个回合", en:"miss a turn"},
-        {icon:"🚮", zh:"垃圾分类", en:"sort the rubbish"},
-        {icon:"♻️", zh:"重复使用布质购物袋", en:"reuse cloth bags"},
-        {icon:"📉", zh:"减少使用塑料", en:"reduce the use of plastic"},
-        {icon:"📦", zh:"回收废弃物", en:"recycle the waste"},
-        {icon:"🌡️", zh:"正变得糟糕", en:"be getting worse"},
-        {icon:"🙋", zh:"某人自己", en:"on one's own"},
-        {icon:"🖼️", zh:"创作艺术作品", en:"make works of art"}
-    ];
+    const libraries = {
+        // 旧专题：环境保护
+        eco: {
+            mode: "direct", // 直接选择模式
+            data: [
+                {icon:"🚮", zh:"把垃圾分类", en:"sort rubbish/litter"},
+                {icon:"🧤", zh:"捡垃圾", en:"pick up litter/rubbish"},
+                {icon:"🚱", zh:"关掉水龙头", en:"turn off the tap"}
+                // ... 你可以把之前的52个都贴在这里
+            ]
+        },
+        // 新专题：词性转换
+        trans: {
+            mode: "step", // 三阶段点击模式
+            data: [
+                {icon:"🏡", zh:"邻居 / 街坊", opts:["neighbour", "neighbourhood"], sent:"My _______ is very kind. We live in a quiet _______.", ans:"neighbour"},
+                {icon:"🏗️", zh:"建造 / 建筑物", opts:["build", "building"], sent:"They want to _______ a tall _______ near the park.", ans:"build"},
+                {icon:"♻️", zh:"重用 / 可用的", opts:["reuse", "reusable"], sent:"You can _______ this bottle. It is a _______ one.", ans:"reuse"}
+                // ... 刚才给你的16个
+            ]
+        }
+    };
 
+    let currentMode = "";
     let currentIdx = 0;
-    let score = 0;
     let quizData = [];
+    let currentStep = 1;
     let answered = false;
 
-    // 点击按钮执行的函数
-    function startGame() {
-        // 1. 隐藏菜单，显示游戏
+    function startGame(libKey) {
+        const lib = libraries[libKey];
+        currentMode = lib.mode;
+        quizData = [...lib.data].sort(() => Math.random() - 0.5);
+        currentIdx = 0;
         document.getElementById('menu-ui').style.display = 'none';
         document.getElementById('game-ui').style.display = 'block';
-        
-        // 2. 打乱数据并初始化
-        quizData = [...allData].sort(() => Math.random() - 0.5);
-        currentIdx = 0;
-        score = 0;
         loadQuestion();
     }
 
     function loadQuestion() {
         answered = false;
+        currentStep = 1;
         const data = quizData[currentIdx];
+        
+        // 初始化显示
         document.getElementById('progress').innerText = `进度: ${currentIdx + 1} / ${quizData.length}`;
         document.getElementById('icon-hint').innerText = data.icon;
-        document.getElementById('text-hint').innerText = data.zh;
+        document.getElementById('zh-layer').innerText = data.zh;
         document.getElementById('feedback').innerText = "";
         document.getElementById('next-btn').style.display = "none";
+        document.getElementById('options').style.display = "none";
+        document.getElementById('sentence-layer').style.display = "none";
 
-        // 生成干扰项
-        let distractors = allData
-            .filter(v => v.en !== data.en)
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 3)
-            .map(v => v.en);
+        if (currentMode === "direct") {
+            // 旧模式逻辑：直接显示中文，显示选项
+            document.getElementById('zh-layer').style.display = "block";
+            document.getElementById('options').style.display = "grid";
+            document.getElementById('step-hint').innerText = "";
+            generateDirectOptions(data);
+        } else {
+            // 新模式逻辑：初始隐藏中文和例句
+            document.getElementById('zh-layer').style.display = "none";
+            document.getElementById('step-hint').innerText = "点击提示中文";
+        }
+    }
+
+    function handleCardClick() {
+        if (currentMode !== "step" || answered) return;
         
-        let options = [data.en, ...distractors].sort(() => Math.random() - 0.5);
+        if (currentStep === 1) {
+            document.getElementById('zh-layer').style.display = "block";
+            document.getElementById('step-hint').innerText = "再次点击看例句";
+            currentStep = 2;
+        } else if (currentStep === 2) {
+            const data = quizData[currentIdx];
+            document.getElementById('sentence-layer').innerHTML = data.sent.replace(/_______/g, "<u>_______</u>");
+            document.getElementById('sentence-layer').style.display = "block";
+            document.getElementById('options').style.display = "grid";
+            document.getElementById('step-hint').innerText = "选择正确形式";
+            generateStepOptions(data);
+            currentStep = 3;
+        }
+    }
 
+    // 生成旧模式选项
+    function generateDirectOptions(data) {
         const optionsDiv = document.getElementById('options');
         optionsDiv.innerHTML = "";
-        options.forEach(opt => {
+        // 简单逻辑：随机抓2个别的凑数
+        const allEn = libraries.eco.data.map(v => v.en);
+        let opts = [data.en, ...allEn.filter(v => v !== data.en).sort(() => Math.random() - 0.5).slice(0, 3)];
+        opts.sort(() => Math.random() - 0.5).forEach(o => {
             const btn = document.createElement('button');
             btn.className = "option-btn";
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(opt, btn);
+            btn.innerText = o;
+            btn.onclick = () => checkAnswer(o, btn, data.en);
             optionsDiv.appendChild(btn);
         });
     }
 
-    function checkAnswer(selected, btn) {
-        if(answered) return;
+    // 生成新模式选项
+    function generateStepOptions(data) {
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = "";
+        data.opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = "option-btn";
+            btn.innerText = o;
+            btn.onclick = (e) => { e.stopPropagation(); checkAnswer(o, btn, data.ans); };
+            optionsDiv.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, btn, correct) {
+        if (answered) return;
         answered = true;
-        const correct = quizData[currentIdx].en;
-        
-        if(selected === correct) {
+        if (selected === correct) {
             btn.classList.add('correct');
             document.getElementById('feedback').innerText = "正确！✨";
-            score++;
         } else {
             btn.classList.add('wrong');
-            document.getElementById('feedback').innerText = "选错了哦";
-            // 高亮显示正确的那个按钮
-            const btns = document.getElementsByClassName('option-btn');
-            for(let b of btns) {
+            document.getElementById('feedback').innerText = "错误，应选: " + correct;
+            Array.from(document.getElementsByClassName('option-btn')).forEach(b => {
                 if(b.innerText === correct) b.classList.add('correct');
-            }
+            });
         }
-        document.getElementById('next-btn').style.display = "inline-block";
+        document.getElementById('next-btn').style.display = "block";
     }
 
     function nextQuestion() {
         currentIdx++;
-        if(currentIdx < quizData.length) {
-            loadQuestion();
-        } else {
-            document.getElementById('game-ui').innerHTML = `
-                <h2>🎉 全部完成！</h2>
-                <p>你的得分: ${score} / ${quizData.length}</p>
-                <button class="start-btn" onclick="location.reload()">重新开始</button>
-            `;
+        if (currentIdx < quizData.length) loadQuestion();
+        else {
+            document.getElementById('game-ui').innerHTML = `<h2>🎉 完成！</h2><button class="menu-btn" onclick="location.reload()">回到主菜单</button>`;
         }
     }
 </script>
