@@ -14,14 +14,16 @@
         .menu-grid { display: grid; gap: 15px; }
         .menu-btn { padding: 20px; border: 2px solid var(--primary-green); border-radius: 15px; background: white; cursor: pointer; font-size: 1.1rem; font-weight: bold; color: var(--dark-green); transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .menu-btn:hover { background: var(--primary-green); color: white; transform: translateY(-3px); }
-        .card { border: 3px dashed var(--primary-green); border-radius: 20px; padding: 30px 20px; margin: 20px 0; min-height: 220px; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; background: #fff; }
+        .card { border: 3px dashed var(--primary-green); border-radius: 20px; padding: 30px 20px; margin: 20px 0; min-height: 220px; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; background: #fff; transition: 0.2s; }
+        .card:active { transform: scale(0.98); }
         .step-indicator { position: absolute; top: 12px; right: 15px; font-size: 0.75rem; color: var(--hint-gold); font-weight: bold; }
-        .visual-hint { font-size: 75px; margin-bottom: 10px; }
+        .visual-hint { font-size: 70px; margin-bottom: 5px; }
+        .audio-btn { font-size: 1.8rem; color: var(--primary-green); margin-bottom: 10px; cursor: pointer; }
         .zh-layer { font-size: 1.4rem; font-weight: bold; color: var(--dark-green); margin: 10px 0; }
-        .sentence-layer { font-size: 1.1rem; color: #444; background: #f9f9f9; padding: 15px; border-radius: 12px; margin-top: 10px; line-height: 1.4; }
+        .sentence-layer { font-size: 1.1rem; color: #444; background: #f9f9f9; padding: 15px; border-radius: 12px; margin-top: 10px; line-height: 1.4; text-align: left; }
         .sentence-layer u { color: var(--dark-green); font-weight: bold; text-underline-offset: 4px; }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .option-btn { padding: 12px; border: 2px solid #eee; border-radius: 12px; background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .option-btn { padding: 12px; border: 2px solid #eee; border-radius: 12px; background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; font-family: inherit; }
         .option-btn:hover { border-color: var(--primary-green); background: #f0fff4; }
         .correct { background: var(--primary-green) !important; color: white; border-color: var(--dark-green); }
         .wrong { background: #ff7675 !important; color: white; border-color: #d63031; }
@@ -33,7 +35,7 @@
 
 <div class="container" id="menu-ui">
     <h1>🌿 英语全能挑战中心</h1>
-    <p class="subtitle">Environment & Grammar Master</p>
+    <p class="subtitle">Eco-Game + Grammar Audio Edition</p>
     <div class="menu-grid">
         <button class="menu-btn" onclick="startGame('eco')"><span>♻️</span> 环境保护短语 (52题)</button>
         <button class="menu-btn" onclick="startGame('trans')"><span>📝</span> 词性转换挑战 (16组)</button>
@@ -45,6 +47,7 @@
     <div class="card" id="main-card" onclick="handleCardClick()">
         <div id="step-hint" class="step-indicator"></div>
         <span class="visual-hint" id="icon-hint"></span>
+        <div class="audio-btn" id="audio-trigger" onclick="replayAudio(event)">🔊</div>
         <div class="zh-layer" id="zh-layer"></div>
         <div class="sentence-layer" id="sentence-layer"></div>
     </div>
@@ -137,6 +140,30 @@
 
     let currentMode = "", currentIdx = 0, score = 0, quizData = [], currentStep = 1, answered = false;
 
+    // --- 发音核心函数 ---
+    function speak(text) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function replayAudio(e) {
+        e.stopPropagation();
+        const data = quizData[currentIdx];
+        if (currentMode === 'direct') {
+            speak(data.en);
+        } else {
+            // 词性转换模式：第一步读选项，第三步读句子
+            if (currentStep < 3) {
+                speak(data.opts.join(", "));
+            } else {
+                speak(data.sent.replace(/_______/g, data.ans));
+            }
+        }
+    }
+
     function startGame(libKey) {
         const lib = libraries[libKey];
         currentMode = lib.mode;
@@ -157,6 +184,7 @@
         document.getElementById('next-btn').style.display = "none";
         document.getElementById('options').style.display = "none";
         document.getElementById('sentence-layer').style.display = "none";
+        document.getElementById('audio-trigger').style.visibility = "hidden";
 
         if (currentMode === "direct") {
             document.getElementById('zh-layer').style.display = "block";
@@ -181,6 +209,11 @@
             document.getElementById('sentence-layer').style.display = "block";
             document.getElementById('options').style.display = "grid";
             document.getElementById('step-hint').innerText = "🎯 请选择正确形式";
+            document.getElementById('audio-trigger').style.visibility = "visible";
+            
+            // 自动朗读整个句子
+            speak(data.sent.replace(/_______/g, data.ans));
+            
             generateStepOptions(data);
             currentStep = 3;
         }
@@ -216,6 +249,13 @@
     function checkAnswer(selected, btn, correct) {
         if (answered || (currentMode === 'step' && currentStep < 3)) return;
         answered = true;
+        
+        // 环境模式：选完自动朗读单词
+        if (currentMode === 'direct') {
+            document.getElementById('audio-trigger').style.visibility = "visible";
+            speak(correct);
+        }
+
         if (selected === correct) {
             btn.classList.add('correct');
             document.getElementById('feedback').innerText = "Correct! ✨";
